@@ -26,7 +26,7 @@ A secure, local web application that:
 │  METHOD 1: Automatic (Easiest)                                         │
 └────────────────────────────────────────────────────────────────────────┘
 
-    ./start.sh
+    ./scripts/start.sh
 
   This will:
   • Install dependencies (if needed)
@@ -51,30 +51,28 @@ A secure, local web application that:
 │ File                                │ Purpose                          │
 ├─────────────────────────────────────┼──────────────────────────────────┤
 │ START HERE:                         │                                  │
-│ • NEW-SOLUTION.md                   │ 📘 Complete overview             │
-│ • QUICKSTART.md                     │ ⚡ 2-minute setup guide          │
+│ • README.md                         │ 📘 Main documentation            │
+│ • docs/QUICKSTART.md                │ ⚡ 2-minute setup guide          │
 │                                     │                                  │
 │ Core Application:                   │                                  │
 │ • server.js                         │ 🖥️  Web server                   │
 │ • public/index.html                 │ 🎨 Upload interface              │
-│ • start.sh                          │ 🚀 Quick launcher                │
+│ • scripts/start.sh                  │ 🚀 Quick launcher                │
 │                                     │                                  │
 │ Configuration:                      │                                  │
-│ • .env.example                      │ 📧 Email config template         │
 │ • package.json                      │ 📦 Dependencies                  │
 │                                     │                                  │
-│ Documentation:                      │                                  │
-│ • README-WEBAPP.md                  │ 📚 Detailed guide                │
+│ Documentation (docs/):              │                                  │
+│ • README-WEBAPP.md                  │ 📚 Detailed webapp guide         │
 │ • QUICKSTART.md                     │ ⚡ Fast setup                    │
+│ • SETUP.md, FAQ.md                  │ 📖 Additional help               │
 │                                     │                                  │
-│ Sample Data:                        │                                  │
-│ • 2026-05-03_..._AllureReport.html  │ 🧪 Test with this!               │
+│ Sample Data (examples/):            │                                  │
+│ • examples/reports/*.html           │ 🧪 Test with these!              │
+│ • examples/workflows/*.yml          │ 📝 Workflow templates            │
 │                                     │                                  │
-│ Old Files (Can Delete):             │                                  │
-│ • .github-workflows-*.yml           │ ❌ GitHub Actions (not used)     │
-│ • EXAMPLE-test-workflow.yml         │ ❌ GitHub Actions (not used)     │
-│ • setup.sh, verify-setup.sh         │ ❌ GitHub Actions (not used)     │
-│ • README.md, SETUP.md, FAQ.md       │ ❌ GitHub Actions docs           │
+│ Scripts (scripts/):                 │                                  │
+│ • start.sh, setup.sh                │ 🛠️  Utility scripts              │
 └─────────────────────────────────────┴──────────────────────────────────┘
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,146 @@
+name: Daily Test Report Analysis
+
+on:
+  # Run after your main test workflow completes
+  workflow_run:
+    workflows: ["Run Tests"]  # Change to your actual test workflow name
+    types: [completed]
+  
+  # Or run on schedule (e.g., 8 AM every weekday)
+  schedule:
+    - cron: '0 8 * * 1-5'  # Monday-Friday at 8:00 AM UTC
+
+jobs:
+  analyze-tests:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion != 'cancelled'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts from test run
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-report
+          path: ./allure-report
+        continue-on-error: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./script
+
+      - name: Find Allure report HTML
+        id: find-report
+        run: |
+          # Find the allure report (could be index.html or allure.html)
+          REPORT_PATH=$(find . -name "allure.html" -o -name "index.html" | grep -E "allure|test.*report" | head -1)
+          if [ -z "$REPORT_PATH" ]; then
+            REPORT_PATH=$(find . -path "*/allure*" -name "*.html" | head -1)
+          fi
+          
+          if [ -n "$REPORT_PATH" ]; then
+            echo "report_path=$REPORT_PATH" >> $GITHUB_OUTPUT
+            echo "✅ Found report: $REPORT_PATH"
+          else
+            echo "❌ Allure report not found"
+            exit 1
+          fi
+
+      - name: Parse and analyze test results
+        run: |
+          node script/parseAllureReport.js "${{ steps.find-report.outputs.report_path }}" \
+            --output-json test-analysis.json \
+            --output-html test-report.html
+
+      - name: Upload analysis artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-analysis
+          path: |
+            test-report.html
+            test-analysis.json
+        if: always()
+
+      - name: Comment on PR with test summary
+        if: github.event_name == 'pull_request' || github.event.workflow_run.event == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const analysis = JSON.parse(fs.readFileSync('test-analysis.json', 'utf8'));
+            
+            const comment = `
+            ## 📊 Test Report Summary
+            
+            | Metric | Value |
+            |--------|-------|
+            | **Total Tests** | ${analysis.total} |
+            | **Passed** ✅ | ${analysis.passed} |
+            | **Failed** ❌ | ${analysis.failed} |
+            | **Skipped** ⏭️ | ${analysis.skipped} |
+            | **Pass Rate** | ${analysis.passRate}% |
+            
+            ${analysis.failed > 0 ? `
+            ### Top Failed Packages
+            ${Object.entries(analysis.failuresByPackage)
+              .slice(0, 5)
+              .map(([pkg, data]) => \`- **\${pkg}**: \${data.count} failures\`)
+              .join('\\n')}
+            ` : '✨ All tests passed!'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+        continue-on-error: true
+
+      - name: Send Slack notification
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "Daily Test Report",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📊 Daily Test Report - ${{ github.repository }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Test Results:*\n• Total: `${{ fromJson(steps.parse-results.outputs.analysis).total }}`\n• Passed: `${{ fromJson(steps.parse-results.outputs.analysis).passed }}`\n• Failed: `${{ fromJson(steps.parse-results.outputs.analysis).failed }}`\n• Pass Rate: `${{ fromJson(steps.parse-results.outputs.analysis).passRate }}%`"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Full Report"
+                      },
+                      "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        continue-on-error: true
