@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Reports and outputs
+test-report.html
+test-analysis.json
+allure-report/
+.allure/
+
+# Web app specific
+uploads/
+.env
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build and temp
+dist/
+build/
+*.log
+tmp/

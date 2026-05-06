@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vodafone Squad Test Analysis</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #e60000 0%, #8b0000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #e60000;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #e60000;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover, .upload-area.drag-over {
+            background: #fff5f5;
+            border-color: #8b0000;
+        }
+
+        .upload-area.uploading {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .file-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .file-list.has-files {
+            display: block;
+        }
+
+        .file-item {
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .file-remove {
+            color: #e60000;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .file-remove:hover {
+            background: #fff5f5;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: #e60000;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #8b0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #666;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #444;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .analysis-table th {
+            background: #e60000;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .analysis-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .analysis-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .analysis-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .result-cell {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .result-excellent { color: #28a745; }
+        .result-good { color: #5cb85c; }
+        .result-warning { color: #ffc107; }
+        .result-poor { color: #e60000; }
+
+        .pipeline-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .pipeline-true {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pipeline-false {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e60000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .summary-stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e60000;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Vodafone Squad Test Analysis</h1>
+            <p>Upload multiple Allure reports to analyze squad performance</p>
+        </div>
+
+        <div class="card">
+            <h2 style="color: #e60000; margin-bottom: 20px;">Upload Squad Reports</h2>
+            
+            <div id="uploadArea" class="upload-area">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drag & drop multiple Allure HTML reports here</div>
+                <div class="upload-hint">or click to browse (up to 20 files)</div>
+            </div>
+
+            <input type="file" id="fileInput" multiple accept=".html" />
+
+            <div id="fileList" class="file-list"></div>
+
+            <div style="text-align: center;">
+                <button id="uploadBtn" class="btn" disabled>Upload & Analyze</button>
+                <button id="clearBtn" class="btn-secondary btn" style="display: none;">Clear All</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p>Analyzing reports...</p>
+        </div>
+
+        <div id="resultsSection" class="results-section">
+            <div class="card">
+                <div class="actions">
+                    <h2 style="color: #e60000; margin: 0;">Squad Analysis Results</h2>
+                    <div>
+                        <button id="exportBtn" class="btn">📥 Download Excel (CSV)</button>
+                        <button id="uploadNewBtn" class="btn-secondary btn">Upload New Reports</button>
+                    </div>
+                </div>
+
+                <div id="summaryStats" class="summary-stats"></div>
+
+                <div style="overflow-x: auto;">
+                    <table class="analysis-table">
+                        <thead>
+                            <tr>
+                                <th>Squad</th>
+                                <th>Date</th>
+                                <th>Result</th>
+                                <th style="width: 40%;">Reason</th>
+                                <th>Pipeline issue?</th>
+                                <th>Suggestion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyResults" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No results to display</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const message = document.getElementById('message');
+        const loadingState = document.getElementById('loadingState');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const summaryStats = document.getElementById('summaryStats');
+        const exportBtn = document.getElementById('exportBtn');
+        const uploadNewBtn = document.getElementById('uploadNewBtn');
+        const emptyResults = document.getElementById('emptyResults');
+
+        let selectedFiles = [];
+        let currentAnalysisId = null;
+        let currentResults = [];
+
+        // Upload area interactions
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            // Convert FileList to Array and filter HTML files
+            const htmlFiles = Array.from(files).filter(f => f.name.endsWith('.html'));
+            
+            if (htmlFiles.length === 0) {
+                showMessage('Please select HTML files only', 'error');
+                return;
+            }
+
+            if (htmlFiles.length > 20) {
+                showMessage('Maximum 20 files allowed', 'error');
+                return;
+            }
+
+            selectedFiles = htmlFiles;
+            displayFileList();
+            uploadBtn.disabled = false;
+            clearBtn.style.display = 'inline-block';
+        }
+
+        function displayFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.classList.remove('has-files');
+                fileList.innerHTML = '';
+                return;
+            }
+
+            fileList.classList.add('has-files');
+            fileList.innerHTML = `<div style="margin-bottom: 10px;"><strong>${selectedFiles.length} file(s) selected:</strong></div>`;
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">📄 ${file.name} (${formatBytes(file.size)})</span>
+                    <span class="file-remove" data-index="${index}">✕</span>
+                `;
+                fileList.appendChild(fileItem);
+            });
+
+            // Add remove listeners
+            document.querySelectorAll('.file-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    selectedFiles.splice(index, 1);
+                    displayFileList();
+                    
+                    if (selectedFiles.length === 0) {
+                        uploadBtn.disabled = true;
+                        clearBtn.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            fileInput.value = '';
+            displayFileList();
+            uploadBtn.disabled = true;
+            clearBtn.style.display = 'none';
+        });
+
+        uploadBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+
+            uploadBtn.disabled = true;
+            uploadArea.classList.add('uploading');
+            loadingState.classList.add('show');
+            message.classList.remove('show');
+
+            try {
+                const formData = new FormData();
+                selectedFiles.forEach(file => {
+                    formData.append('reportFiles', file);
+                });
+
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    currentAnalysisId = result.analysisId;
+                    currentResults = result.results;
+                    displayResults(result.results);
+                    showMessage(`Successfully analyzed ${result.results.length} squad report(s)`, 'success');
+                } else {
+                    showMessage(result.error || 'Upload failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadArea.classList.remove('uploading');
+                loadingState.classList.remove('show');
+            }
+        });
+
+        function displayResults(results) {
+            if (!results || results.length === 0) {
+                emptyResults.style.display = 'block';
+                resultsTableBody.innerHTML = '';
+                summaryStats.innerHTML = '';
+                resultsSection.classList.add('show');
+                return;
+            }
+
+            emptyResults.style.display = 'none';
+            
+            // Display summary stats
+            const avgResult = Math.round(results.reduce((sum, r) => sum + r.result, 0) / results.length);
+            const pipelineIssueCount = results.filter(r => r.pipelineIssue).length;
+            
+            summaryStats.innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-value">${results.length}</div>
+                    <div class="stat-label">Squads Analyzed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${avgResult}%</div>
+                    <div class="stat-label">Average Pass Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${pipelineIssueCount}</div>
+                    <div class="stat-label">Pipeline Issues</div>
+                </div>
+            `;
+
+            // Display table rows
+            resultsTableBody.innerHTML = '';
+            results.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                const resultClass = row.result >= 90 ? 'result-excellent' :
+                                   row.result >= 70 ? 'result-good' :
+                                   row.result >= 50 ? 'result-warning' : 'result-poor';
+                
+                tr.innerHTML = `
+                    <td><strong>${row.squad}</strong></td>
+                    <td>${row.date}</td>
+                    <td class="result-cell ${resultClass}">${row.result}%</td>
+                    <td>${row.reason}</td>
+                    <td><span class="pipeline-badge pipeline-${row.pipelineIssue.toString().toLowerCase()}">${row.pipelineIssue ? 'TRUE' : 'FALSE'}</span></td>
+                    <td>${row.suggestion || '-'}</td>
+                `;
+                
+                resultsTableBody.appendChild(tr);
+            });
+
+            resultsSection.classList.add('show');
+        }
+
+        exportBtn.addEventListener('click', async () => {
+            if (!currentAnalysisId) {
+                showMessage('No analysis to export', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/export', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ analysisId: currentAnalysisId })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `squad-analysis-${Date.now()}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showMessage('Report exported successfully', 'success');
+                } else {
+                    showMessage('Export failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        });
+
+        uploadNewBtn.addEventListener('click', () => {
+            resultsSection.classList.remove('show');
+            selectedFiles = [];
+            fileInput.value = '';
+            displayFileList();
+            uploadBtn.disabled = true;
+            clearBtn.style.display = 'none';
+            currentAnalysisId = null;
+            currentResults = [];
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type} show`;
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

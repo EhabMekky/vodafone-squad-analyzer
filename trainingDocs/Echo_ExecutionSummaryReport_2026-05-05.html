@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content=
+            "width=device-width, initial-scale=1.0">
+
+    <title>Echo Execution Summary Report</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="https://colorlib.com/etc/tb/Table_Fixed_Header/vendor/bootstrap/css/bootstrap.min.css">
+    <br>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+                body {
+                  background-color: #e9edf1;
+                }
+                .content {
+                  max-width: 1400px;
+                  margin: auto;
+                  background-color:white;
+                }
+                .piechart {
+                    display: block;
+                    position: relative;
+                    width: 220px;
+                    height: 220px;
+                    border-radius: 50%;
+                    background-image: conic-gradient(
+                        MediumSeaGreen 0.00% 90.36144%,
+                        Tomato 90.36144% 100.0%,
+                        Orange 100.0%);
+                }
+                .piechart1 {
+                     display: block;
+                     position: relative;
+                     width: 100px;
+                     height: 100px;
+                     border-radius: 50%;
+                     margin-top: 20px;
+                     background-image: conic-gradient(
+                        MediumSeaGreen 358.9873417721519deg,
+                        Tomato 0);
+                }
+                #logo{
+                	margin: 0 15px 0 0;
+                }
+
+                body,
+                .piechart {
+                    display: block;
+                    justify-content: center;
+                    align-items: center;
+                }
+                    .table100 .ps__rail-y{
+                        width:9px;
+                        background-color:transparent;
+                        opacity:1!important;
+                        right:5px
+                    }
+                    .table100 .ps__rail-y::before{
+                        content:"";
+                        display: block;
+                        position: relative;
+                        background-color:#ebebeb;
+                        border-radius:5px;
+                        width:100%;
+                        height:calc(100% - 30px);
+                        left:0;
+                        top:15px
+                    }
+                    .table100 .ps__rail-y .ps__thumb-y{
+                        width:100%;
+                        right:0;
+                        background-color:transparent;
+                        opacity:1!important
+                    }
+                    .table100 .ps__rail-y .ps__thumb-y::before{
+                        content:"";
+                        display: block;
+                        position: relative;
+                        background-color:#ccc;
+                        border-radius:5px;
+                        width:100%;
+                        height:calc(100% - 30px);
+                        left:0;
+                        top:15px
+                    }
+                    .limiter{
+                        width:100%;
+                        margin:0 auto
+                    }
+                    .container-table100{
+                        width:100%;
+                        min-height:100%;
+                        background:#fff;
+                        align-items:center;
+                        justify-content:center;
+                    }
+                    .wrap-table100{
+                        width:75%
+                    }
+                    .table100{
+                        background-color:#fff
+                    }
+                    table{
+                        width:100%
+                    }
+                    th,td{
+                        font-weight:unset;
+                        padding-right:10px
+                    }
+                    th{
+                    	position: sticky;
+                    	top: 0
+                    }
+                    .table100-head th{
+                        padding-top:18px;
+                        padding-bottom:18px
+                    }
+                    .table100-body td{
+                        padding-top:16px;
+                        padding-bottom:16px
+                    }
+                    .table100{
+                        position: relative;
+                        padding-top:15px;
+                        padding-bottom:60px
+                    }
+                    .table100-head{
+                        position: relative;
+                        width:100%;
+                        top:0;
+                        left:0
+                    }
+                    .table100-body{
+                        max-height:585px;
+                        overflow:auto
+                    }
+                    .table100.ver5{
+                        margin-right:-30px
+                    }
+                    .table100.ver5 .table100-head{
+                        padding-right:30px
+                    }
+                    .table100.ver5 th{
+                        font-family: Roboto,sans-serif;
+                        font-size:14px;
+                        font-weight: bold;
+                        color:#555;
+                        line-height:1.4;
+                        text-transform:uppercase;
+                        background-color:white;
+                        padding-top:25px;
+                        padding-bottom:10px
+                    }
+                    .table100.ver5 td{
+                        font-family: Roboto,sans-serif;
+                        font-size:15px;
+                        color:gray;
+                        line-height:1.4;
+                        background-color:#f7f7f7
+                    }
+                    .table100.ver5 .table100-body tr{
+                        overflow:hidden;
+                        border-bottom:10px solid #fff;
+                        border-radius:10px
+                    }
+                    .table100.ver5 .table100-body table{
+                        border-collapse:separate;
+                        border-spacing:0 10px
+                    }
+                    .table100.ver5 .table100-body td{
+                        border:solid 1px transparent;
+                        border-style:solid none;
+                        padding-top:10px;
+                        padding-bottom:10px
+                    }
+                    .table100.ver5 .table100-body td:first-child{
+                        border-left-style:solid;
+                        border-top-left-radius:10px;
+                        border-bottom-left-radius:10px
+                    }
+                    .table100.ver5 .table100-body td:last-child{
+                        border-right-style:solid;
+                        border-bottom-right-radius:10px;
+                        border-top-right-radius:10px
+                    }
+                    .table100.ver5 tr:hover td{
+                        background-color:#ebebeb;
+                        cursor:pointer
+                    }
+                    .table100.ver5{
+                        overflow:hidden
+                    }
+                    .table100.ver5 .table100-body{
+                        padding-right:30px
+                    }
+                    .table100.ver5 .ps__rail-y{
+                        right:0
+                    }
+                    .table100.ver5 .ps__rail-y::before{
+                        background-color:#ebebeb
+                    }
+                    .table100.ver5 .ps__rail-y .ps__thumb-y::before{
+                        background-color:#ccc
+                    }
+                    .column0{
+                        width:5%;
+                        padding-left:20px
+                    }
+                    .column1{
+                        width:5%;
+                    }
+                    .column2{
+                        width:20%
+                    }
+                    .column3{
+                        width:30%
+                    }
+                    .column4{
+                        width:25%
+                    }
+                    .column5{
+                        width:10%
+                    }
+                    .column6{
+                        width:10%
+                    }
+                    hr.rounded {
+                    	border-top: 8px solid #bbb;
+                    	border-radius: 5px;
+                    	margin-left: 35px;
+                     	margin-right: 35px;
+                    }
+                    hr.rounded1 {
+                        border-top: 2px solid #bbb;
+                        border-radius: 2px;
+                        margin-left: 35px;
+                        margin-right: 35px;
+                    }
+                    .rcorner {
+                    	border-radius: 10px;
+                    	border: 1px solid #696969;
+                    	padding-left: 15px;
+                    }
+                    .issue {
+                        margin-left: 50px;
+                        margin-right: 50px;
+                    }
+
+    </style>
+</head>
+
+<body>
+<center>
+	<a href="https://shafthq.github.io/" target="_blank"><img src="https://github.com/ShaftHQ/SHAFT_ENGINE/raw/main/src/main/resources/images/shaft.png" alt="SHAFT logo" height="100" id="logo"></a>
+    <h1>Echo Execution Summary Report</h1><p> Browser: <b>Google Chrome</b></p>
+    <br>
+    <div class="content">
+        <h2 style="clear:both; padding-top: 15px; margin-bottom: 3px">05/05/2026</h2>
+        <h5 style="clear:both; color:Grey">20:05:09 - 20:41:36 (36 min, 27 sec) </h5>
+        <br>
+        <div style="border: 1px solid Grey" class="piechart"></div>
+        <br>
+        <h2>90.36% Passed</h2>
+        <br><br>
+        <h3><b>Total Test Cases</b>:&nbsp83&nbsp&nbsp[
+            <font style="color:MediumSeaGreen;"><b>Passed:</b>&nbsp75</font>&nbsp|
+            <font style="color:Tomato;"><b>Failed:</b>&nbsp8</font>&nbsp|
+            <font style="color:Orange;"><b>Skipped:</b>&nbsp0</font>&nbsp]
+        </h3>
+        <br>
+        <hr class="rounded1">
+         <h4><b title="&#9432; Validations is the number of executed assertions and verifications that the executed test cases have, as a test case could have many validations. (excluding skipped tests and validations)">&#9432; </b><b>Total Executed Validations</b>:&nbsp711&nbsp&nbsp[
+            <font style="color:MediumSeaGreen;"><b>Passed:</b>&nbsp709</font>&nbsp|
+            <font style="color:Tomato;"><b>Failed:</b>&nbsp2</font>&nbsp]
+        </h4>
+        <div class="piechart1"></div>
+        <h5 style="padding-top: 5px;">99.72% Passed</h5>
+        <hr class="rounded1">
+        <h5><b title="&#9432; Issues are problems that may relate to the tests and should be investigated further to open or close bugs; Issues are divided between the three following categories. (directly related to the @Issue annotation)">&#9432; </b><b>Total Issues</b>:&nbsp8&nbsp&nbsp[
+            <font style="color:Tomato;"><b title="&#9432; Defining the Failed tests that are not linked to bugs. (need to investigate and if needed, open new bugs and link them to the related tests using the @Issue annotation)">&#9432; </b><b>Tests that should Pass:</b>&nbsp8</font>&nbsp|
+            <font style="color:Orange;"><b title="&#9432; Defining the Passed tests that are already linked to open bugs. (need to investigate and remove the @Issue annotation and close the bug as the bug should be aready resolved)">&#9432; </b><b>Tests Resolved:</b>&nbsp0</font>&nbsp|
+            <font style="color:MediumSeaGreen;"><b title="&#9432; Defining the Failed tests that are already linked to open bugs (using the @Issue annotation).">&#9432; </b><b>Tests that Fail as Expected:</b>&nbsp0</font>&nbsp]
+        </h5>
+        <hr class="rounded">
+        <h4 style="display:inline;">Test Cases Details</h4>
+        <div class="limiter">
+        <div class="container-table100">
+        <div class="wrap-table100">
+        <div class="table100 ver5 m-b-110">
+        <div class="table100-head">
+        <b>
+        	<input class="rcorner" id="search" type="text" placeholder="Search for test cases.. ">
+        </b>
+        <select id='searchDropDown'>
+            <option value="">Status</option>
+        	<option value='&#9989; PASSED'>&#9989; PASSED</option>
+        	<option value='&#10060; FAILED'>&#10060; FAILED</option>
+        	<option value='&#128679; SKIPPED'>&#128679; SKIPPED</option>
+        </select>
+        <br>
+        </div>
+        <div class="table100-body js-pscroll ps ps--active-y">
+        <table>
+        <thead>
+        <tr class="row100 head">
+        <th class="cell100 column0"></th>
+        <th class="cell100 column1">Id</th>
+        <th class="cell100 column2">Suite</th>
+        <th class="cell100 column3">Name</th>
+        <th class="cell100 column4">Error</th>
+        <th class="cell100 column5">Status</th>
+        <th class="cell100 column6">issue id</th>
+        </tr>
+        </thead>
+        <tbody id="table"><tr class="row100 body"><td class="cell100 column0">1</td><td class="cell100 column1">WFET-12916</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12127</td><td class="cell100 column3">WFET-12916 - GC02 - Validate Tickets Overview Page Behavior | user with Closed tickets only | When clicked on Closed tickets tab only</td><td class="cell100 column4">Assertion failed; expected true, but found false</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">2</td><td class="cell100 column1">WFET-12918</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12127</td><td class="cell100 column3">WFET-12918 - GC04 - Validate Tickets Overview Page Behavior | user with No tickets | When clicked on open & close tickets tabs</td><td class="cell100 column4">Assertion failed; expected true, but found false</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">3</td><td class="cell100 column1">WFET-13229</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13229 - GC01-NA-Cable user-Verify set an appointment for inprogress ticket at ticket details page</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">4</td><td class="cell100 column1">WFET-13230</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13230 -GC02-NA-UM user-Verify set an appointment for inprogress ticket at ticket details page </td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">5</td><td class="cell100 column1">WFET-13232</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13232 -  GC03-NA-Cable user-Verify change an appointment for inprogress ticket at ticket details page </td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">6</td><td class="cell100 column1">WFET-13233</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13230 -GC04-NA-UM user-Verify change an appointment for inprogress ticket at ticket details page </td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">7</td><td class="cell100 column1">WFET-13236</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13236 - GC07-NA-DSL user-Verify set an appointment of ticket at ticket details page</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">8</td><td class="cell100 column1">WFET-13250</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12139</td><td class="cell100 column3">WFET-13250 - GC11-NA-DSL user-Verify prepare for the technician arrival with 24 hours left</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">9</td><td class="cell100 column1">WFET-13135</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12140</td><td class="cell100 column3">WFET-13135 - GC01 | Validate the view of Tickets details page | Tracking Technician | Notification for Single Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">10</td><td class="cell100 column1">WFET-13437</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13437 GC01-Cable User-TicketDetails-Verify Track my techie page when Techie is on the way "TECHIE ACCEPTS SHOWING THEIR INFORMATION"</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">11</td><td class="cell100 column1">WFET-13438</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13438 GC02-UM User-TicketDetails-Verify Track my techie page when Techie is on the way "TECHIE ACCEPTS SHOWING THEIR INFORMATION"</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">12</td><td class="cell100 column1">WFET-13443</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13443-GC07-Cable User-TicketDetails-Verify Track my techie page when Techie has already arrived "TECHIE not ACCEPTS SHOWING THEIR INFORMATION</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">13</td><td class="cell100 column1">WFET-13444</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13444-GC08-UM User-TicketDetails-Verify Track my techie page when Techie has already arrived "TECHIE not ACCEPTS SHOWING THEIR INFORMATION</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">14</td><td class="cell100 column1">WFET-13448</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13448-GC12-UM User-TicketDetails-Verify Track my techie page when User didn’t allow cookies
+</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">15</td><td class="cell100 column1">WFET-13449</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13449-GC13-Cable User-TicketDetails-Verify Track my techie page when Techie was already there "FINISHED"
+</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">16</td><td class="cell100 column1">WFET-13450</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13450-GC14-UM User-TicketDetails-Verify Track my techie page when Techie was already there "FINISHED"
+</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">17</td><td class="cell100 column1">WFET-13451</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12296</td><td class="cell100 column3">WFET-13451-GC15-Cable User-TicketDetails-Verify Track my techie page when User didn’t allow cookies
+</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">18</td><td class="cell100 column1">WFET-13417</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13417 - GC01 || Validate the view of Rate my techie page for user rating 3 or less stars | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">19</td><td class="cell100 column1">WFET-13418</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13418 - GC02 || Validate the view of Rate my techie page for user rating more than 3 stars | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">20</td><td class="cell100 column1">WFET-13420</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13420 - GC03 || Validate the view of Rate my techie page for user rating 3 or less stars | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">21</td><td class="cell100 column1">WFET-13421</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13421 - GC04 || Validate the view of Rate my techie page for user rating more than 3 stars & share his name and picture | more than 1024 digit | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">22</td><td class="cell100 column1">WFET-13433</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13433 - GC06 || Validate the view of Rate my techie page when user comes back after finishing the rating</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">23</td><td class="cell100 column1">WFET-13424</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12297</td><td class="cell100 column3">WFET-13424 - GC07 || Validate the view of Rate my techie page when user cancel the rating</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">24</td><td class="cell100 column1">WFET-12765</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12349</td><td class="cell100 column3">WFET-12767 - GC01 - MINT Authentication| VKD | No fixed net contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">25</td><td class="cell100 column1">WFET-12765</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12349</td><td class="cell100 column3">WFET-12770 - GC02 - MINT Authentication| VKD | with single contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">26</td><td class="cell100 column1">WFET-12765</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12349</td><td class="cell100 column3">WFET-12771 - GC05 - MINT Authentication| DSL | with multiple contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">27</td><td class="cell100 column1">WFET-13213</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12375</td><td class="cell100 column3">WFET-13213 - GC01 || Validate the redirect to ticket page from deep link | cable</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">28</td><td class="cell100 column1">WFET-13214</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12375</td><td class="cell100 column3">WFET-13214 - GC02 || Validate the redirect to ticket page from deep link | UM</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">29</td><td class="cell100 column1">WFET-13215</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12375</td><td class="cell100 column3">WFET-13215 - GC03 || Validate the redirect to ticket page from deep link | DSL</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">30</td><td class="cell100 column1">WFET-13890</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12378</td><td class="cell100 column3">WFET-13890 - GC01 || Validate Change design to WS10 Failure Search | Form_DatePicker | Happy flow</td><td class="cell100 column4">Failed to identify unique element using this locator "By.xpath: //*[@data-automation-id='chatbotEntryPage_getHelp_headline']" Root cause: "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//*[@data-automation-id='chatbotEntryPage_getHelp_headline']"}"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">31</td><td class="cell100 column1">WFET-13894</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12378</td><td class="cell100 column3">WFET-13894 - GC05 || Validate Change design to WS10 Failure Search | Form_DatePicker | No Time available </td><td class="cell100 column4">Failed to identify unique element using this locator "By.xpath: //*[@data-automation-id='chatbotEntryPage_getHelp_headline']" Root cause: "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//*[@data-automation-id='chatbotEntryPage_getHelp_headline']"}"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">32</td><td class="cell100 column1">WFET-13898</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12378</td><td class="cell100 column3">WFET-13896 - GC07 || Validate Change design to WS10 Failure Search | Form_DatePicker | No date selected </td><td class="cell100 column4">Failed to identify unique element using this locator "By.xpath: //*[@data-automation-id='chatbotEntryPage_getHelp_headline']" Root cause: "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//*[@data-automation-id='chatbotEntryPage_getHelp_headline']"}"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">33</td><td class="cell100 column1">WFET-13412</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12381</td><td class="cell100 column3">WFET-13412 - GC01 || Validate the Failure Search | Form_QA_OneColumn | Without image | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">34</td><td class="cell100 column1">WFET-13413</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12381</td><td class="cell100 column3">WFET-13413 - GC02 || Validate the Failure Search | Form_QA_OneColumn | With image | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">35</td><td class="cell100 column1">WFET-13637</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13637 - GC01 | Validate the Failure Search | Form_Solution when Ticket is Created | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">36</td><td class="cell100 column1">WFET-13639</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13639 - GC03 | Validate Failure Search | Form_Solution while Working on Ticket | DSL User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">37</td><td class="cell100 column1">WFET-13643</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13643 - GC07 | Validate Failure Search | Form_Solution when there is an Error for Choosing appointment/Terminvereinbarung | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">38</td><td class="cell100 column1">WFET-13644</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13644 - GC08 | Validate Failure Search | Form_Solution when contract is blocked | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">39</td><td class="cell100 column1">WFET-13661</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13661 - GC09 | Validate Failure Search | Form_Solution when Problem solved / Anliegen gelöst | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">40</td><td class="cell100 column1">WFET-13663</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12389</td><td class="cell100 column3">WFET-13663 - GC11 | Validate Failure Search | Form_Solution when Call is ready | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">41</td><td class="cell100 column1">WFET-13278</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12391</td><td class="cell100 column3">WFET-13278 - GC03 || Validate the Failure Search | Questionnaire component | Memo Overlay Heading & BodyText & List Items | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">42</td><td class="cell100 column1">WFET-13279</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12391</td><td class="cell100 column3">WFET-13279 - GC04 || Validate the Failure Search | Questionnaire component | Memo Overlay Heading & Video & BodyText | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">43</td><td class="cell100 column1">WFET-13283</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12391</td><td class="cell100 column3">WFET-13283 - GC07 || Validate the Failure Search | Questionnaire component | MemoOverlay Heading & Image & Video | DSL User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">44</td><td class="cell100 column1">WFET-14224</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12429</td><td class="cell100 column3">WFET-14224 - GC06-Cable user-Chatbot Integration-Verify Close ticket action on ticket with status Inprogress</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">45</td><td class="cell100 column1">WFET-14225</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12429</td><td class="cell100 column3">WFET-14225 - GC07-UM user-Chatbot Integration-Verify Close ticket action on ticket with status Inprogress</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">46</td><td class="cell100 column1">WFET-12894</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12874</td><td class="cell100 column3">WFET-12894 - GC01 | Validate Tickets Overview Page Behavior When No Tabs Are Selected for Users with Both Open and Closed Tickets</td><td class="cell100 column4">Root cause: "org.openqa.selenium.NoSuchElementException: Cannot locate an element using By.xpath: //input[@type = "checkbox" and @value = "open"]"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">47</td><td class="cell100 column1">WFET-12895</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12874</td><td class="cell100 column3">WFET-12895 - GC02 | Validate Tickets Overview Page Behavior When No Tabs Are Selected for Users with Open Tickets only</td><td class="cell100 column4">Root cause: "org.openqa.selenium.NoSuchElementException: Cannot locate an element using By.xpath: //input[@type = "checkbox" and @value = "open"]"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">48</td><td class="cell100 column1">WFET-13101</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12936</td><td class="cell100 column3">WFET-13101 - GC01 || Validate the view of ticket details page for resolved ticket | Single UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">49</td><td class="cell100 column1">WFET-13105</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12936</td><td class="cell100 column3">WFET-13105 - GC05 || Validate the view of ticket details page for closed ticket | Single DSL User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">50</td><td class="cell100 column1">WFET-13110</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12937</td><td class="cell100 column3">WFET-13110-GC01-UM user-Deeplink-Validate Failure Search | Start page for NetAssistant for single contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">51</td><td class="cell100 column1">WFET-13112</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12937</td><td class="cell100 column3">WFET-13112-GC02-Cable user-Deeplink-Validate Failure Search | Start page for NetAssistant for single contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">52</td><td class="cell100 column1">WFET-13111</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12937</td><td class="cell100 column3">WFET-13111-GC03-DSL user-Deeplink-Validate Failure Search | Start page for NetAssistant for single contract</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">53</td><td class="cell100 column1">WFET-13632</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12942</td><td class="cell100 column3">WFET-13632 - GC01 || Validate the Failure Search | Form_FormularOneColumn | Happy Flows |Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">54</td><td class="cell100 column1">WFET-13633</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12942</td><td class="cell100 column3">WFET-13633 - GC02 || Validate the Failure Search | Form_FormularOneColumn | Unhappy Flows | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">55</td><td class="cell100 column1">WFET-13634</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12942</td><td class="cell100 column3">WFET-13634 - GC03 || Validate the Failure Search | Form_FormularOneColumn | Error Cases |Cable User</td><td class="cell100 column4">Failed to identify unique element using this locator "By.xpath: //p[@id='fieldset-message-radio-1']" Root cause: "org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//p[@id='fieldset-message-radio-1']"}"</td><td class="cell100 column5">&#10060; FAILED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">56</td><td class="cell100 column1">WFET-13463</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC01-NA-Cable user-Verify error page when error = 400</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">57</td><td class="cell100 column1">WFET-13464</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC02-NA-UM user-Verify error page when error = 400</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">58</td><td class="cell100 column1">WFET-13465</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC03-NA-DSL user-Verify error page when error = 400</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">59</td><td class="cell100 column1">WFET-13466</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC04-NA-Cable user-Verify error page when error = 500</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">60</td><td class="cell100 column1">WFET-13468</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC06-NA-DSL user-Verify error page when error = 500</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">61</td><td class="cell100 column1">WFET-13471</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_12947</td><td class="cell100 column3">GC09-NA-DSL user-Verify error page when there are Any other Errors like timeout or unexpected errors</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">62</td><td class="cell100 column1">WFET-13149</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13056</td><td class="cell100 column3">WFET-13149 - GC03 || Validate the view of ticket details page for new ticket | single Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">63</td><td class="cell100 column1">WFET-13151</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13056</td><td class="cell100 column3">WFET-13151 - GC05 || Validate the view of ticket details page for in Progress ticket | Single DSL User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">64</td><td class="cell100 column1">WFET-13294</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13177</td><td class="cell100 column3">WFET-13294 - GC01 || Validate the redirect to error page (Ticket details) from deep link | Ticket not valid | DSL</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">65</td><td class="cell100 column1">WFET-13296</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13177</td><td class="cell100 column3">WFET-13296 - GC03 || Validate the redirect to error page (Ticket details) from deep link | General Error</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">66</td><td class="cell100 column1">WFET-13297</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13177</td><td class="cell100 column3">WFET-13297 - GC04 || Validate the redirect to error page (Ticket details) from deep link | Link not valid (404) | CableL</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">67</td><td class="cell100 column1">WFET-13472</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13436</td><td class="cell100 column3">WFET-13472 - GC01 || Validate the Failure Search | Form_QA_TwoColumn | With image | Cable User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">68</td><td class="cell100 column1">WFET-13473</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13436</td><td class="cell100 column3">WFET-13473 - GC02 || Validate the Failure Search | Form_QA_TwoColumn | With image | UM User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">69</td><td class="cell100 column1">WFET-13474</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13436</td><td class="cell100 column3">WFET-13474 - GC03 || Validate the Failure Search | Form_QA_TwoColumn | With image | DSL User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">70</td><td class="cell100 column1">WFET-13993</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC01 | Validate the view of ticket details page for New Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">71</td><td class="cell100 column1">WFET-13994</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC02 | Validate the view of ticket details page for InProgress Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">72</td><td class="cell100 column1">WFET-13995</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC03 | Validate the view of ticket details page for InProgress/techie Set an appointment Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">73</td><td class="cell100 column1">WFET-13996</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC04 | Validate the view of ticket details page for InProgress/Change appointment Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">74</td><td class="cell100 column1">WFET-13997</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC05 | Validate the view of ticket details page for InProgress / Not able to track the techie Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">75</td><td class="cell100 column1">WFET-13998</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC06 | Validate the view of ticket details page for Resolved Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">76</td><td class="cell100 column1">WFET-13999</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC07 | Validate the view of ticket details page for Closed Ticket | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">77</td><td class="cell100 column1">WFET-14001</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC08 | Validate the view of ticket details page for New Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">78</td><td class="cell100 column1">WFET-14002</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC09 | Validate the view of ticket details page for InProgress Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">79</td><td class="cell100 column1">WFET-14003</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC10 | Validate the view of ticket details page for InProgress/techie Set an appointment Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">80</td><td class="cell100 column1">WFET-14004</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC11 | Validate the view of ticket details page for InProgress / Not able to track the techie Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">81</td><td class="cell100 column1">WFET-14005</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC12 | Validate the view of ticket details page for InProgress/Change appointment Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">82</td><td class="cell100 column1">WFET-14006</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC13 | Validate the view of ticket details page for Resolved Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr><tr class="row100 body"><td class="cell100 column0">83</td><td class="cell100 column1">WFET-14007</td><td class="cell100 column2">de.vodafone.tests.NetAssistant.ST.WFET_13623</td><td class="cell100 column3">GC14 | Validate the view of ticket details page for Closed Ticket from deep link | Solstice User</td><td class="cell100 column4"></td><td class="cell100 column5">&#9989; PASSED</td><td class="cell100 column6"></td></tr></tbody>
+        </table>
+        <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div></div>
+        <br>
+        </div>
+        </div>
+        </div>
+        <h6>Visit <a href="https://shafthq.github.io/" target="_blank">SHAFT's user guide</a> to learn more about the engine and its capabilities.<h6/>
+        </div>
+        <br><br>
+    </div>
+
+        <script>
+                    $(document).ready(function() {
+
+                        var search = function(){
+                            var value1 = $("#search").val().toLowerCase();
+                            var value2 = $("#searchDropDown").val();
+
+                            console.log(value1 + value2)
+                            $("#table tr").filter(function() {
+                                $(this).toggle(
+                                    $(this).text().toLowerCase().indexOf(value1) > -1  &&
+                                    $(this).text().indexOf(value2) > -1
+                                )
+                            });
+
+                        };
+
+                        $("#search").on("keyup", function() {
+                            search();
+                        });
+        				$("#searchDropDown").on("change", function(){
+                            search();
+        				});
+                    });
+                </script>
+</center>
+</body>
+</html>

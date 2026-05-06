@@ -1,0 +1,54 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run tests with Maven
+        run: |
+          # Run your TestNG tests with Allure
+          mvn test -Dallure.results.directory=allure-results
+        continue-on-error: true
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          # Generate Allure HTML report from results
+          mvn allure:report -DresultsDirectory=allure-results -DreportDirectory=allure-report
+
+      - name: Upload Allure Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
+
+      - name: Upload test results (for analysis)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-html
+          path: allure-report/index.html
+          retention-days: 30
+
+# Note: This workflow will trigger the analysis workflow automatically!
+# The analysis workflow watches for this workflow to complete and then
+# generates the daily test report automatically.
