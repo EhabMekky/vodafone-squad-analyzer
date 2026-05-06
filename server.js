@@ -30,7 +30,7 @@ const upload = multer({
       cb(new Error('Only HTML files are allowed'));
     }
   },
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }
 });
 
 // Middleware
