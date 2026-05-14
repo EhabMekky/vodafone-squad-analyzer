@@ -261,12 +261,20 @@ class AllureReportAnalyzer {
 
   parseTestCaseData(scriptContent) {
     // Extract test case JSON data
+    // Use matchAll for safer iteration on very large strings (avoids regex.exec infinite loops)
     const regex = /d\('data\/test-cases\/[^']+',\s*'([^']+)'\)/g;
-    let match;
+    let matches;
+    try {
+      matches = scriptContent.matchAll(regex);
+    } catch (e) {
+      console.error('Regex matching failed on test-case data:', e.message);
+      return;
+    }
 
-    while ((match = regex.exec(scriptContent)) !== null) {
+    for (const match of matches) {
       try {
         const base64Data = match[1];
+        if (!base64Data || base64Data.length === 0) continue;
         const jsonStr = Buffer.from(base64Data, 'base64').toString('utf-8');
         const testCase = JSON.parse(jsonStr);
         
@@ -363,15 +371,16 @@ class AllureReportAnalyzer {
         const summary = JSON.parse(jsonStr);
         
         // Use summary data if available
+        // Use != null to allow 0 values (|| would treat 0 as falsy)
         if (summary.statistic) {
-          this.results.passed = summary.statistic.passed || this.results.passed;
-          this.results.failed = summary.statistic.failed || this.results.failed;
-          this.results.skipped = summary.statistic.skipped || this.results.skipped;
-          this.results.broken = summary.statistic.broken || this.results.broken;
+          if (summary.statistic.passed != null) this.results.passed = summary.statistic.passed;
+          if (summary.statistic.failed != null) this.results.failed = summary.statistic.failed;
+          if (summary.statistic.skipped != null) this.results.skipped = summary.statistic.skipped;
+          if (summary.statistic.broken != null) this.results.broken = summary.statistic.broken;
         }
       }
     } catch (e) {
-      // Summary not critical
+      console.error('Error parsing summary data:', e.message);
     }
   }
 
@@ -514,10 +523,11 @@ app.post('/api/upload', upload.array('reportFiles', 20), async (req, res) => {
         const analysis = analyzer.parse();
 
         // Create squad result entry
+        const passRate = Number.parseFloat(analysis.passRate);
         const squadResult = {
           squad: analysis.squadName,
           date: new Date().toLocaleDateString('en-US'),
-          result: Math.round(analysis.passRate),
+          result: Number.isNaN(passRate) ? 0 : Math.round(passRate),
           reason: generateDefaultReason(analysis),
           pipelineIssue: false,
           suggestion: '',
@@ -696,6 +706,18 @@ app.post('/api/export', async (req, res) => {
     console.error('Export error:', error);
     res.status(500).json({ error: error.message });
   }
+});
+
+// Handle multer errors (file too large, wrong type, etc.)
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: `Upload error: ${err.message}` });
+  }
+  if (err) {
+    console.error('Unhandled server error:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error' });
+  }
+  next();
 });
 
 // Serve main page
