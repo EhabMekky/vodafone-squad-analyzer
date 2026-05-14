@@ -508,14 +508,26 @@
             message.classList.remove('show');
 
             try {
-                const formData = new FormData();
-                selectedFiles.forEach(file => {
-                    formData.append('reportFiles', file);
-                });
+                // Parse all reports client-side to avoid uploading large files
+                const analyses = [];
+                for (const file of selectedFiles) {
+                    try {
+                        const htmlContent = await readFileAsText(file);
+                        const analysis = parseReportClientSide(htmlContent);
+                        analyses.push(analysis);
+                    } catch (fileErr) {
+                        console.error(`Error parsing ${file.name}:`, fileErr);
+                    }
+                }
 
-                const response = await fetch('/api/upload', {
+                if (analyses.length === 0) {
+                    throw new Error('Could not parse any of the selected reports');
+                }
+
+                const response = await fetch('/api/analyze', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ analyses })
                 });
 
                 const contentType = response.headers.get('content-type') || '';
@@ -542,6 +554,234 @@
                 loadingState.classList.remove('show');
             }
         });
+
+        // --- Client-side report parsing (avoids uploading large files) ---
+
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+                reader.readAsText(file);
+            });
+        }
+
+        function parseReportClientSide(htmlContent) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
+
+            const results = {
+                total: 0, passed: 0, failed: 0, skipped: 0, broken: 0, unknown: 0,
+                passRate: 0, failuresByPackage: {}, failureReasons: [], testCases: [],
+                duration: 0, avgDuration: 0, longestTest: null, shortestTest: null,
+                categories: {}, failureTypes: {},
+                timestamp: new Date().toISOString(), squadName: 'Unknown'
+            };
+
+            const title = doc.querySelector('title');
+            const isExecutionSummary = title?.textContent?.includes('Execution Summary Report');
+
+            if (isExecutionSummary) {
+                parseExecutionSummaryCS(doc, results);
+            } else {
+                parseAllureCS(doc, results);
+            }
+
+            return results;
+        }
+
+        // --- Execution Summary Report (client-side) ---
+
+        function parseExecutionSummaryCS(doc, results) {
+            const title = doc.querySelector('title');
+            if (title) {
+                const t = title.textContent;
+                let m = t.match(/^(\w+(?:_\w+)?)\s+(?:Test Automation\s+)?Execution Summary Report/);
+                if (!m) m = t.match(/(Consolidated|Alpha|Bravo|Charlie|Delta|Delta_eCare|Echo|Foxtrot|Golf|Hotel|Ice|November|Oscar)(?:\s+Test Automation)?\s+Execution Summary Report/i);
+                if (m) results.squadName = m[1];
+            }
+
+            const bodyText = doc.body.textContent;
+            const prm = bodyText.match(/([\d.]+)%\s+Passed/);
+            if (prm) results.passRate = Number.parseFloat(prm[1]);
+
+            const tm = bodyText.match(/Total Test Cases[:\s]+(\d+)/);
+            const pm = bodyText.match(/Passed[:\s]+(\d+)/);
+            const fm = bodyText.match(/Failed[:\s]+(\d+)/);
+            if (tm) results.total = Number.parseInt(tm[1], 10);
+            if (pm) results.passed = Number.parseInt(pm[1], 10);
+            if (fm) results.failed = Number.parseInt(fm[1], 10);
+
+            const tableRows = doc.querySelectorAll('tbody#table tr');
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 6) {
+                    const packageName = cells[2]?.textContent?.trim() || '';
+                    const testName = cells[3]?.textContent?.trim() || '';
+                    const status = cells[5]?.textContent?.trim() || '';
+                    let testStatus = 'unknown';
+                    if (status.includes('PASSED')) testStatus = 'passed';
+                    else if (status.includes('FAILED')) testStatus = 'failed';
+                    else if (status.includes('SKIPPED')) { testStatus = 'skipped'; results.skipped++; }
+
+                    results.testCases.push({ name: testName, status: testStatus, duration: 0, package: packageName });
+
+                    if (testStatus === 'failed') {
+                        if (!results.failuresByPackage[packageName]) results.failuresByPackage[packageName] = { count: 0, tests: [], reasons: [] };
+                        results.failuresByPackage[packageName].count++;
+                        results.failuresByPackage[packageName].tests.push({ name: testName, reason: 'See execution summary for details' });
+                    }
+
+                    if (!results.categories[packageName]) results.categories[packageName] = { passed: 0, failed: 0, skipped: 0, total: 0 };
+                    results.categories[packageName].total++;
+                    if (testStatus === 'passed') results.categories[packageName].passed++;
+                    if (testStatus === 'failed') results.categories[packageName].failed++;
+                    if (testStatus === 'skipped') results.categories[packageName].skipped++;
+                }
+            });
+
+            if (results.total === 0) results.total = results.testCases.length;
+            if (results.passRate === 0 && results.total > 0) results.passRate = (results.passed / results.total) * 100;
+            calculateMetricsCS(results);
+        }
+
+        // --- Allure Report (client-side) ---
+
+        function parseAllureCS(doc, results) {
+            extractSquadNameCS(doc, results);
+
+            const scripts = doc.querySelectorAll('script');
+            for (const script of scripts) {
+                const content = script.textContent;
+                if (content.includes("d('data/test-cases/")) parseTestCaseDataCS(content, results);
+                if (content.includes("d('widgets/summary"))  parseSummaryDataCS(content, results);
+            }
+            calculateMetricsCS(results);
+        }
+
+        function extractSquadNameCS(doc, results) {
+            const title = doc.querySelector('title');
+            if (title?.textContent) {
+                const m = title.textContent.match(/\b(Alpha|Bravo|Charlie|Delta|Delta_eCare|Echo|Foxtrot|Golf|Hotel|Ice|Juliet|Kilo|Lima|Mike|November|Oscar|Papa|Quebec|Romeo|Sierra|Tango|Uniform|Victor|Whiskey|Xray|Yankee|Zulu|Consolidated)(?:_\w+)?\b/i);
+                if (m) { results.squadName = m[1]; return; }
+            }
+            const scripts = doc.querySelectorAll('script');
+            for (const script of scripts) {
+                if (script.textContent.includes('data/test-cases')) {
+                    const m = script.textContent.match(/\b(Alpha|Bravo|Charlie|Delta|Delta_eCare|Echo|Foxtrot|Golf|Hotel|Ice|November|Oscar|Consolidated)(?:_\w+)?\b/i);
+                    if (m) { results.squadName = m[1]; return; }
+                }
+            }
+        }
+
+        function parseTestCaseDataCS(scriptContent, results) {
+            const regex = /d\('data\/test-cases\/[^']+',\s*'([^']+)'\)/g;
+            for (const match of scriptContent.matchAll(regex)) {
+                try {
+                    const jsonStr = atob(match[1]);
+                    const tc = JSON.parse(jsonStr);
+                    processTestCaseCS(tc, results);
+                } catch (e) { /* skip invalid */ }
+            }
+        }
+
+        function processTestCaseCS(tc, results) {
+            const status = (tc.status || 'unknown').toLowerCase();
+            const fullName = tc.fullName || tc.name || '';
+            const pkg = extractPackageNameCS(fullName);
+
+            if (status === 'passed') results.passed++;
+            else if (status === 'failed') results.failed++;
+            else if (status === 'skipped') results.skipped++;
+            else if (status === 'broken') results.broken++;
+            else results.unknown++;
+
+            if (status === 'failed' || status === 'broken') {
+                if (!results.failuresByPackage[pkg]) results.failuresByPackage[pkg] = { count: 0, tests: [], reasons: [] };
+                const reason = extractFailureReasonCS(tc);
+                results.failuresByPackage[pkg].count++;
+                results.failuresByPackage[pkg].tests.push({ name: tc.name || 'Unknown', reason });
+                if (reason && !results.failuresByPackage[pkg].reasons.includes(reason)) results.failuresByPackage[pkg].reasons.push(reason);
+                if (reason) results.failureReasons.push({ package: pkg, test: tc.name, reason, fullReason: tc.statusMessage || tc.statusTrace || 'No details' });
+            }
+
+            results.testCases.push({ name: tc.name, status, duration: tc.time?.duration || 0, package: pkg });
+            if (tc.time?.duration) results.duration += tc.time.duration;
+        }
+
+        function parseSummaryDataCS(scriptContent, results) {
+            try {
+                const m = scriptContent.match(/d\('widgets\/summary[^']*',\s*'([^']+)'\)/);
+                if (!m) return;
+                const summary = JSON.parse(atob(m[1]));
+                if (summary.statistic) {
+                    if (summary.statistic.passed != null) results.passed = summary.statistic.passed;
+                    if (summary.statistic.failed != null) results.failed = summary.statistic.failed;
+                    if (summary.statistic.skipped != null) results.skipped = summary.statistic.skipped;
+                    if (summary.statistic.broken != null) results.broken = summary.statistic.broken;
+                }
+            } catch (e) { /* not critical */ }
+        }
+
+        function extractPackageNameCS(fullName) {
+            const parts = fullName.split('.');
+            if (parts.length > 5) return parts.slice(0, 5).join('.');
+            if (parts.length > 2) return parts.slice(0, -1).join('.');
+            return 'Unknown';
+        }
+
+        function extractFailureReasonCS(tc) {
+            let reason = tc.statusMessage || tc.statusTrace || tc.statusDetails?.message || '';
+            if (!reason) return 'No error message available';
+            const lines = reason.split('\n').filter(l => l.trim());
+            if (lines.length > 0) reason = lines[0];
+            reason = reason
+                .replace(/^(java\.|org\.|com\.)\S+:\s*/, '')
+                .replace(/^Error:\s*/i, '')
+                .replace(/^Exception:\s*/i, '')
+                .replace(/\s+at\s+.*$/, '')
+                .trim();
+            if (reason.length > 150) reason = reason.substring(0, 147) + '...';
+            return reason || 'Unknown error';
+        }
+
+        function calculateMetricsCS(results) {
+            results.total = results.passed + results.failed + results.skipped + results.broken + results.unknown;
+            if (results.total > 0) {
+                results.passRate = ((results.passed / results.total) * 100).toFixed(2);
+                results.avgDuration = Math.round(results.duration / results.total);
+            }
+            const withDur = results.testCases.filter(t => t.duration > 0);
+            if (withDur.length > 0) {
+                results.longestTest = withDur.reduce((a, b) => a.duration > b.duration ? a : b);
+                results.shortestTest = withDur.reduce((a, b) => a.duration < b.duration ? a : b);
+            }
+            results.testCases.forEach(test => {
+                if (!results.categories[test.package]) results.categories[test.package] = { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 };
+                const cat = results.categories[test.package];
+                cat.total++; cat.duration += test.duration;
+                if (test.status === 'passed') cat.passed++;
+                else if (test.status === 'failed' || test.status === 'broken') cat.failed++;
+                else if (test.status === 'skipped') cat.skipped++;
+            });
+            results.failureReasons.forEach(f => {
+                const type = categorizeFailureCS(f.reason);
+                results.failureTypes[type] = (results.failureTypes[type] || 0) + 1;
+            });
+            results.failuresByPackage = Object.fromEntries(Object.entries(results.failuresByPackage).sort(([,a],[,b]) => b.count - a.count));
+            results.categories = Object.fromEntries(Object.entries(results.categories).sort(([,a],[,b]) => b.failed - a.failed));
+        }
+
+        function categorizeFailureCS(reason) {
+            const l = reason.toLowerCase();
+            if (l.includes('assert') || l.includes('expected')) return 'Assertion Failures';
+            if (l.includes('timeout') || l.includes('timed out')) return 'Timeouts';
+            if (l.includes('element') || l.includes('selector')) return 'Element Not Found';
+            if (l.includes('null') || l.includes('undefined')) return 'Null/Undefined Errors';
+            if (l.includes('connection') || l.includes('network')) return 'Network Issues';
+            if (l.includes('permission') || l.includes('access')) return 'Permission Errors';
+            return 'Other Errors';
+        }
 
         function displayResults(results) {
             if (!results || results.length === 0) {

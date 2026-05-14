@@ -34,7 +34,7 @@ const upload = multer({
 });
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
@@ -675,6 +675,52 @@ function generateDefaultReason(analysis) {
 
   return finalReason;
 }
+
+// Accept pre-parsed analysis data (client-side parsing for large files)
+app.post('/api/analyze', (req, res) => {
+  try {
+    const { analyses } = req.body;
+    if (!analyses || !Array.isArray(analyses) || analyses.length === 0) {
+      return res.status(400).json({ error: 'No analysis data provided' });
+    }
+
+    const squadResults = [];
+
+    for (const analysis of analyses) {
+      const passRate = Number.parseFloat(analysis.passRate);
+      const squadResult = {
+        squad: analysis.squadName || 'Unknown',
+        date: new Date().toLocaleDateString('en-US'),
+        result: Number.isNaN(passRate) ? 0 : Math.round(passRate),
+        reason: generateDefaultReason(analysis),
+        pipelineIssue: false,
+        suggestion: '',
+        fullAnalysis: analysis
+      };
+      squadResults.push(squadResult);
+    }
+
+    // Clean up old cache entries (older than 1 hour)
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    for (const [id] of analysisCache.entries()) {
+      if (Number.parseInt(id, 10) < oneHourAgo) {
+        analysisCache.delete(id);
+      }
+    }
+
+    const analysisId = Date.now().toString();
+    analysisCache.set(analysisId, squadResults);
+
+    res.json({
+      success: true,
+      analysisId: analysisId,
+      results: squadResults
+    });
+  } catch (error) {
+    console.error('Analyze error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Export to Excel/CSV
 app.post('/api/export', async (req, res) => {
